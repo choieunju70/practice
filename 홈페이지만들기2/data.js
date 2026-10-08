@@ -5,7 +5,7 @@ window.CLUB_DATA = {
  activities: [], // {date:'2026-10-08',title,location,description,image:'assets/event.jpg'}
  news: [], // {date,title,description}
  businesses: [], // {name,category,description,url:'https://...',image:'assets/business.jpg'}
- clubs: [], // {group:'골프회' 또는 '산악회',date,title,location,description}
+ clubs: [], // {group:'골프회' 또는 '산악회',date,title,location,description,images:['assets/golf.jpg']}
  district: [], // {date,title,description,url:'https://...'}
  photos: [], // {image:'assets/event.jpg',title,date,description}
  youtube: [] // {title,url:'https://www.youtube.com/@채널주소'}
