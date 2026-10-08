@@ -45,7 +45,11 @@ for name,(lat,lon) in {'busan':(35.1796,129.0756),'seoul':(37.5665,126.978),'dae
 # Only replace the cache when all cities succeeded; never label old data as fresh.
 if len(weather['cities'])==3:save('weather.json',weather)
 try:
-    query='(site:busan.com OR site:lionsclubs.org OR site:lc355a.or.kr) (부산 OR 라이온스 OR 봉사 OR 복지) when:1d'
+    query='(site:busan.com OR site:lionsclubs.org OR site:lc355a.or.kr) (사회복지 OR 심리 OR AI OR 노인 OR 건강 OR 라이온스 OR 봉사) when:1d'
+    content_path=ROOT/'data/content.json'
+    if content_path.exists():
+        topics=json.loads(content_path.read_text(encoding='utf-8')).get('settings',{}).get('newsQuery','').split()
+        if topics:query='(site:busan.com OR site:lionsclubs.org OR site:lc355a.or.kr) ('+' OR '.join(topics)+') when:1d'
     url='https://news.google.com/rss/search?'+urllib.parse.urlencode({'q':query,'hl':'ko','gl':'KR','ceid':'KR:ko'})
     root=ET.fromstring(request(url));items=[]
     for item in root.findall('./channel/item')[:8]:
