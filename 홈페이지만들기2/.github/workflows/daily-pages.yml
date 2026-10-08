@@ -1,0 +1,42 @@
+name: Daily data and GitHub Pages
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 21 * * *' # 06:00 Korea; GitHub scheduling can be delayed
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Update weather and news (retain old caches on fetch failure)
+        id: refresh
+        continue-on-error: true
+        run: python scripts/update_data.py
+      - name: Report refresh status
+        if: steps.refresh.outcome == 'failure'
+        run: echo 'Some public sources could not be refreshed. Check the previous step; old caches retain their original timestamps.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/configure-pages@v5
+      - name: Prepare public files only
+        run: |
+          mkdir -p /tmp/lions-public
+          cp index.html styles.css dashboard.js data.js /tmp/lions-public/
+          cp -r assets data /tmp/lions-public/
+          touch /tmp/lions-public/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: /tmp/lions-public
+      - uses: actions/deploy-pages@v4
